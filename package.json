@@ -2,7 +2,12 @@
     "name": "atari-basic",
     "displayName": "atari-basic",
     "description": "Landuage supprot for Atari Basic",
-    "version": "0.0.1",
+    "publisher": "MarcinJozwikowski",
+    "repository": {
+        "url": "https://github.com/marcin-jozwikowski/atari-basic-vsc-extension.git",
+        "type": "git"
+    },
+    "version": "0.1.0",
     "engines": {
         "vscode": "^1.51.0"
     },
