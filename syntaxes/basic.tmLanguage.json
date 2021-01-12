@@ -20,6 +20,10 @@
 					"match": "^(\\d+)"
 				},
 				{
+					"name": "comment.line",
+					"match": "(REM.+)"
+				},
+				{
 					"name": "comment.line.number-sign",
 					"match": "\\b[GO TO|GOTO|GOSUB|THEN]\\w(\\d+)"
 				}
