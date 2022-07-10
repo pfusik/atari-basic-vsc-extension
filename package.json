@@ -1,13 +1,14 @@
 {
     "name": "atari-basic",
-    "displayName": "atari-basic",
-    "description": "Landuage supprot for Atari Basic",
+    "displayName": "Atari BASIC Syntax",
+    "description": "Landuage support for Atari BASIC",
     "publisher": "MarcinJozwikowski",
     "repository": {
         "url": "https://github.com/marcin-jozwikowski/atari-basic-vsc-extension.git",
         "type": "git"
     },
-    "version": "0.1.1",
+    "icon": "AtariBasicSyntax.png",
+    "version": "0.3.0",
     "engines": {
         "vscode": "^1.51.0"
     },
@@ -17,10 +18,12 @@
     "contributes": {
         "languages": [
             {
-                "id": "basic",
+                "id": "atari.basic",
                 "aliases": [
                     "Atari Basic",
-                    "basic"
+                    "Atari BASIC",
+                    "basic",
+                    "BASIC"
                 ],
                 "extensions": [
                     ".bas"
@@ -30,9 +33,9 @@
         ],
         "grammars": [
             {
-                "language": "basic",
-                "scopeName": "source.basic",
-                "path": "./syntaxes/basic.tmLanguage.json"
+                "language": "atari.basic",
+                "scopeName": "source.atari.basic",
+                "path": "./syntaxes/AtariBASIC.tmLanguage_3.json"
             }
         ]
     }
