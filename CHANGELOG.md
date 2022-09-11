@@ -4,6 +4,10 @@ All notable changes to the "atari-basic" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.4.0 - 2022-09-11
+
+- Rewritten syntax. Still based on [AtariBASIC.sublime-syntax](https://github.com/thinkyhead/6502-Tools/blob/master/Sublime/AtariTools/AtariBASIC.sublime-syntax) by [thinkyhead](https://github.com/thinkyhead) but now more faithfully.
+
 ## 0.3.0 - 2022-07-10
 
 - New language syntax - modified version of [AtariBASIC.sublime-syntax](https://github.com/thinkyhead/6502-Tools/blob/master/Sublime/AtariTools/AtariBASIC.sublime-syntax) by [thinkyhead](https://github.com/thinkyhead).
