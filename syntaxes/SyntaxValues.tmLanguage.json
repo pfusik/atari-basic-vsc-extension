@@ -1,0 +1,232 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Atari BASIC",
+    "scopeName": "source.atari.basic",
+    "information_for_contributors": [
+        "This file is a modified version of https://github.com/thinkyhead/6502-Tools/blob/master/Sublime/AtariTools/AtariBASIC.sublime-syntax"
+    ],
+    "first_line_match": "(\\d\\s)?([ :]|$)",
+    "patterns": [
+        {
+            "include": "#main"
+        }
+    ],
+    "repository": {
+        "main": {
+            "patterns": [
+                {
+                    "match": "comment_line_double-slash",
+                    "name": "comment.line.double-slash"
+                },
+                {
+                    "match": "comment_line_double-dash",
+                    "name": "comment.line.double-dash"
+                },
+                {
+                    "match": "comment_line_number-sign",
+                    "name": "comment.line.number-sign"
+                },
+                {
+                    "match": "comment_line_percentage",
+                    "name": "comment.line.percentage"
+                },
+                {
+                    "match": "comment_line_character",
+                    "name": "comment.line.character"
+                },
+                {
+                    "match": "comment_block_documentation",
+                    "name": "comment.block.documentation"
+                },
+                {
+                    "match": "constant_numeric",
+                    "name": "constant.numeric"
+                },
+                {
+                    "match": "constant_character",
+                    "name": "constant.character"
+                },
+                {
+                    "match": "constant_character_escape",
+                    "name": "constant.character.escape"
+                },
+                {
+                    "match": "constant_language",
+                    "name": "constant.language"
+                },
+                {
+                    "match": "constant_other",
+                    "name": "constant.other"
+                },
+                {
+                    "match": "entity_name_function",
+                    "name": "entity.name.function"
+                },
+                {
+                    "match": "entity_name_type",
+                    "name": "entity.name.type"
+                },
+                {
+                    "match": "entity_name_tag",
+                    "name": "entity.name.tag"
+                },
+                {
+                    "match": "entity_name_section",
+                    "name": "entity.name.section"
+                },
+                {
+                    "match": "entity_other_inherited-class",
+                    "name": "entity.other.inherited-class"
+                },
+                {
+                    "match": "entity_other_attribute-name",
+                    "name": "entity.other.attribute-name"
+                },
+                {
+                    "match": "invalid_illegal",
+                    "name": "invalid.illegal"
+                },
+                {
+                    "match": "invalid_deprecated",
+                    "name": "invalid.deprecated"
+                },
+                {
+                    "match": "keyword_control",
+                    "name": "keyword.control"
+                },
+                {
+                    "match": "keyword_operator",
+                    "name": "keyword.operator"
+                },
+                {
+                    "match": "keyword_other",
+                    "name": "keyword.other"
+                },
+                {
+                    "match": "markup_underline",
+                    "name": "markup.underline"
+                },
+                {
+                    "match": "markup_underline_link",
+                    "name": "markup.underline.link"
+                },
+                {
+                    "match": "markup_bold",
+                    "name": "markup.bold"
+                },
+                {
+                    "match": "markup_heading",
+                    "name": "markup.heading"
+                },
+                {
+                    "match": "markup_italic",
+                    "name": "markup.italic"
+                },
+                {
+                    "match": "markup_list",
+                    "name": "markup.list"
+                },
+                {
+                    "match": "markup_list_numbered",
+                    "name": "markup.list.numbered"
+                },
+                {
+                    "match": "markup_list_unnumbered",
+                    "name": "markup.list.unnumbered"
+                },
+                {
+                    "match": "markup_quote",
+                    "name": "markup.quote"
+                },
+                {
+                    "match": "markup_raw",
+                    "name": "markup.raw"
+                },
+                {
+                    "match": "markup_other",
+                    "name": "markup.other"
+                },
+                {
+                    "match": "storage_type",
+                    "name": "storage.type"
+                },
+                {
+                    "match": "storage_modifier",
+                    "name": "storage.modifier"
+                },
+                {
+                    "match": "string_quoted",
+                    "name": "string.quoted"
+                },
+                {
+                    "match": "string_quoted_single",
+                    "name": "string.quoted.single"
+                },
+                {
+                    "match": "string_quoted_double",
+                    "name": "string.quoted.double"
+                },
+                {
+                    "match": "string_quoted_triple",
+                    "name": "string.quoted.triple"
+                },
+                {
+                    "match": "string_quoted_other",
+                    "name": "string.quoted.other"
+                },
+                {
+                    "match": "string_unquoted",
+                    "name": "string.unquoted"
+                },
+                {
+                    "match": "string_interpolated",
+                    "name": "string.interpolated"
+                },
+                {
+                    "match": "string_regexp",
+                    "name": "string.regexp"
+                },
+                {
+                    "match": "string_other",
+                    "name": "string.other"
+                },
+                {
+                    "match": "support_function",
+                    "name": "support.function"
+                },
+                {
+                    "match": "support_class",
+                    "name": "support.class"
+                },
+                {
+                    "match": "support_type",
+                    "name": "support.type"
+                },
+                {
+                    "match": "support_constant",
+                    "name": "support.constant"
+                },
+                {
+                    "match": "support_variable",
+                    "name": "support.variable"
+                },
+                {
+                    "match": "support_other",
+                    "name": "support.other"
+                },
+                {
+                    "match": "variable_parameter",
+                    "name": "variable.parameter"
+                },
+                {
+                    "match": "variable_language",
+                    "name": "variable.language"
+                },
+                {
+                    "match": "variable_other",
+                    "name": "variable.other"
+                }
+            ]
+        }
+    }
+}

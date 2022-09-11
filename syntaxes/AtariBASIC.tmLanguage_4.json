@@ -1,0 +1,1223 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Atari BASIC",
+  "scopeName": "source.atari.basic",
+  "information_for_contributors": [
+    "This file is a modified version of https://github.com/thinkyhead/6502-Tools/blob/master/Sublime/AtariTools/AtariBASIC.sublime-syntax"
+  ],
+  "first_line_match": "(\\d\\s)?(\\?|BYE|C(OLOR|L(OSE|OAD|R)|OM|ONT|SAVE)|D(ATA|IM|OS|RAWTO)|EN(TER|D)|FOR|G(ET|O(SUB|TO)|RAPHICS)|IF|INPUT|L(ET|IST|OAD|OCATE|PRINT)|NE(W|XT)|NOTE|ON|OPEN|P(LOT|O(INT|KE|P|SITION)|RINT|UT)|RE(AD|M|STORE|TURN)|RUN|S(AVE|ETCOLOR|OUND|TATUS|TOP)|TRAP)([ :]|$)",
+  "patterns": [
+    {
+      "include": "#main"
+    }
+  ],
+  "repository": {
+    "main": {
+      "patterns": [
+        {
+          "comment": "Mark lines that are too long to import",
+          "match": "^(.{254})(\\S.+?)\\s*$",
+          "captures": {
+            "1": {
+              "name": "invalid.warning.line-too-long.ataribasic"
+            },
+            "2": {
+              "name": "invalid.illegal.line-too-long.ataribasic"
+            }
+          }
+        },
+        {
+          "match": "\\s+"
+        },
+        {
+          "comment": "Existing whole line syntax error",
+          "match": "([-+]?(\\d+\\.\\d*(E\\d+)?|\\.?\\d+(E\\d+)?))\\s*ERROR\\s*-.*",
+          "name": "invalid.illegal.line.ataribasic"
+        },
+        {
+          "comment": "A code line starting with a number. Float and scientific notation allowed",
+          "begin": "[-+]?(\\d+\\.\\d*(E\\d+)?|\\.?\\d+(E\\d+)?)",
+          "beginCaptures": {
+            "1": {"name": "keyword.control.line-number.ataribasic"}
+          },
+          "end": ":|$",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic1"}},
+          "patterns": [{"include": "#code_line"}]
+        },
+        {
+          "comment": "A raw code line - without a leading number",
+          "begin": "^",
+          "end": ":|$",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic2"}},
+          "patterns": [{"include": "#code_line"}]
+        }
+      ]
+    },
+
+    "code_line": {
+      "patterns": [
+        {
+          "comment": "REM comment till the end of the line",
+          "begin": "(REM|(RE?)?\\.)",
+          "end": "$",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic3"}},
+          "name":"comment.line"
+        },
+        {
+          "comment": "DATA makes the rest of the line a delimited list of strings",
+          "begin": "(D(ATA|(AT?)?\\.))\\s*",
+          "beginCaptures": {"0": {"name": "keyword.data.ataribasic"}},
+          "end": "$",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic4"}},
+          "patterns": [{"include": "#cmd_data"}]
+        },
+        {
+          "comment": "RESTORE [<nexpr>]",
+          "begin": "(RES(TORE|(T(O(RE?)?)?)?\\.))",
+          "beginCaptures": {"0":{ "name": "keyword.restore.ataribasic"}},
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic5"}},
+          "patterns": [{"include": "#expr_start"}]
+        },
+        {
+          "comment": "Commands taking no parameters",
+          "match": "(CLR)|(CON[T.])|(DEG)|(POP)|(RAD)|(CLOAD)|(CS(AVE|(AV?)?\\.))",
+          "captures": {
+            "1": {"name": "keyword.clr.ataribasic"},
+            "2": {"name": "keyword.cont.ataribasic"},
+            "3": {"name": "keyword.deg.ataribasic"},
+            "4": {"name": "keyword.pop.ataribasic"},
+            "5": {"name": "keyword.rad.ataribasic"},
+            "6": {"name": "keyword.cload.ataribasic"},
+            "7": {"name": "keyword.csave.ataribasic"}
+          }
+        },
+        {
+          "comment": "Commands with no parameters. These should always end the line",
+          "begin": "(B(YE|Y?\\.))|(DOS)|(END)|(NEW)|(STO[P.])|(RET(URN|(UR?)?\\.))",
+          "beginCaptures": {
+            "1": {"name": "keyword.bye.ataribasic"},
+            "3": {"name": "keyword.dos.ataribasic"},
+            "4": {"name": "keyword.end.ataribasic"},
+            "5": {"name": "keyword.new.ataribasic"},
+            "6": {"name": "keyword.stop.ataribasic"},
+            "7": {"name": "keyword.return.ataribasic"}
+          },
+          "end": "$",
+          "match": "",
+          "name": "invalid"
+        },
+        {
+          "comment": "RUN [<string>]",
+          "begin": "(RU[N.])",
+          "beginCaptures": {"0": {"name": "keyword.run.ataribasic"}},
+          "end": "$",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic6"}},
+          "patterns": [{"include": "#expr_start_last"}]
+        },
+        {
+          "comment": "PRINT #<nexpr>[,;<expr-list>]",
+          "begin": "(\\?|PR(INT|(IN?)?.))[ ]*(#)",
+          "beginCaptures": {
+            "1": {"name": "keyword.print.ataribasic"},
+            "4": {"name": "support.other.iocb.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_print_dev"}]
+        },
+        {
+          "comment": "PRINT <expr-list>",
+          "begin": "\\?|PR(INT|(IN?)?\\.)",
+          "beginCaptures": {"0": {"name": "keyword.print.ataribasic"}},
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_print"}]
+        },
+        {
+          "comment": "LPRINT <expr-list>",
+          "begin": "LP(RINT|(R(IN?)?)?\\.)",
+          "beginCaptures": {"0": {"name": "keyword.lprint.ataribasic"}},
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_print"}]
+        },
+        {
+          "begin": "(I(NPUT|(N(PU?)?)?\\.))\\s*(#)",
+          "beginCaptures": {
+            "1": {"name": "keyword.input.ataribasic"},
+            "5": {"name": "support.other.iocb.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#expr_device"}]
+        },
+        {
+          "begin": "I(NPUT|(N(PU?)?)?\\.)",
+          "beginCaptures": {
+            "0": {"name": "keyword.input.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#expr_start"}]
+        },
+        {
+          "begin": "(CL(OSE|(OS?)?\\.))\\s*(#)",
+          "beginCaptures": {
+            "1": {"name": "keyword.close.ataribasic"},
+            "4": {"name": "support.other.iocb.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#expr_device"}]
+        },
+        {
+          "begin": "(O(PEN|(PE?)?\\.))\\s*(#)",
+          "beginCaptures": {
+            "1": {"name": "keyword.open.ataribasic"},
+            "4": {"name": "support.other.iocb.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#expr_device"}]
+        },
+        {
+          "begin": "((GET)|(NO(TE|T?\\.))|(ST(ATUS|(A(TU?)?)?\\.)))\\s*(#)",
+          "beginCaptures": {
+            "2": {"name": "keyword.get.ataribasic"},
+            "3": {"name": "keyword.note.ataribasic"},
+            "5": {"name": "keyword.status.ataribasic"},
+            "9": {"name": "support.other.iocb.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#expr_device"}]
+        },
+        {
+          "begin": "(XIO)\\s*",
+          "beginCaptures": {
+            "1": {"name": "keyword.xio.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_xio"}]
+        },
+        {
+          "begin": "(PUT)\\s*(#)",
+          "beginCaptures": {
+            "1": {"name": "keyword.get.ataribasic"},
+            "2": {"name": "support.other.iocb.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#expr_device"}]
+        },
+        {
+          "begin": "(P(OINT|(O(IN?)?)?\\.))\\s*(#)",
+          "beginCaptures": {
+            "1": {"name": "keyword.get.ataribasic"},
+            "5": {"name": "support.other.iocb.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#expr_device"}]
+        },
+        {
+          "begin": "DIM|COM",
+          "beginCaptures": {
+            "0":{"name": "keyword.dim.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_dim_list"}]
+        },
+        {
+          "begin": "F(OR|O?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.for.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_for"}]
+        },
+        {
+          "begin": "N(EXT|(EX?)?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.next.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_next"}]
+        },
+        {
+          "begin": "T(RAP|(RA?)?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.trap.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#one_expr"}]
+        },
+        {
+          "begin": "POK[E.]",
+          "beginCaptures": {
+            "0":{"name": "keyword.poke.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#two_exprs"}]
+        },
+        {
+          "begin": "C(OLOR|(O(LO?)?)?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.color.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#one_expr"}]
+        },
+        {
+          "begin": "DR(AWTO|(A(WT?)?)?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.drawto.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#two_exprs"}]
+        },
+        {
+          "begin": "GR(APHICS|(A(P(H(IC?)?)?)?)?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.graphics.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#one_expr"}]
+        },
+        {
+          "begin": "LOC(ATE|(AT?)?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.locate.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#three_exprs"}]
+        },
+        {
+          "begin": "POS(ITION|(I(T(IO?)?)?)?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.position.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#two_exprs"}]
+        },
+        {
+          "begin": "PL(OT|O?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.plot.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#two_exprs"}]
+        },
+        {
+          "begin": "SE(TCOLOR|(T(C(O(LO?)?)?)?)?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.setcolor.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#three_exprs"}]
+        },
+        {
+          "begin": "SO(UND|(UN?)?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.sound.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#four_exprs"}]
+        },
+        {
+          "begin": "REA[D.]",
+          "beginCaptures": {
+            "0":{"name": "keyword.read.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#expr_start"}]
+        },
+        {
+          "begin": "L(IST|(IS?)?\\.)",
+          "beginCaptures": {
+            "0":{"name": "keyword.list.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#expr_start"}]
+        },
+        {
+          "begin": "(LO(AD|A?\\.))|(S(AVE|(AV?)?\\.))|(E(NTER|(N(TE?)?)?\\.))",
+          "beginCaptures": {
+            "1": {"name": "keyword.load.ataribasic"},
+            "3": {"name": "keyword.save.ataribasic"},
+            "6": {"name": "keyword.enter.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#one_expr"}]
+        }, 
+        {
+          "begin": "G(OTO|(OT?)?\\.)",
+          "beginCaptures": {"0": {"name": "keyword.goto.ataribasic"}},
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [
+            {"include": "#line_number"}, 
+            {"include": "#expr_start_last"}
+          ]
+        }, 
+        {
+          "begin": "GOS(UB|U?\\.)",
+          "beginCaptures": {"0": {"name": "keyword.gosub.ataribasic"}},
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [
+            {"include": "#line_number"}, 
+            {"include": "#one_expr"}
+          ]
+        },
+        {
+          "begin": "ON",
+          "beginCaptures": {"0": {"name": "keyword.on.ataribasic"}},
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_on"}]
+        },
+        {
+          "begin": "IF",
+          "beginCaptures": {"0": {"name": "keyword.if.ataribasic"}},
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_if"}]
+        },        
+        {
+          "begin": "(LET)\\s*([A-Z][A-Z0-9]*\\$)",
+          "beginCaptures": {
+            "1": {"name": "keyword.let.ataribasic"},
+            "2": {"name": "variable.string.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_let"}]
+        },
+        {
+          "begin": "(LET)\\s*([A-Z][A-Z0-9]*)",
+          "beginCaptures": {
+            "1": {"name": "keyword.let.ataribasic"},
+            "2": {"name": "variable.float.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_let"}]
+        },
+        {
+          "comment": "Variable declaration",
+          "begin": "([A-Z][A-Z0-9]*\\$)",
+          "beginCaptures": {
+            "0": {"name": "variable.float.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_let"}]
+        },
+        {
+          "comment": "Variable declaration",
+          "begin": "([A-Z][A-Z0-9]*)",
+          "beginCaptures": {
+            "0": {"name": "variable.float.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#cmd_let"}]
+        }
+      ]
+    },
+    "cmd_data": {
+      "comment": "Data marks the rest of the line as data items: Simple literal strings delimited by commas",
+      "patterns": [
+        {
+          "match": "([^,]+?)(\\s*$)?",
+          "name": "entity.literal.string.data.ataribasic"
+        },
+        {
+          "match": "\\,",
+          "name": "support.other.delimiter.data.ataribasic6"
+        }
+      ]
+    },    
+    "cmd_dim_list": {
+      "name": "ctx.cmd_dim_list.ataribasic",
+      "patterns": [
+        {
+          "include": "#mixin_statement_end"
+        },
+        {
+          "match": "\\,",
+          "name": "punctuation.definition.delimiter.list.ataribasic"
+        },
+        {
+          "match": "[A-Z][A-Z0-9]*\\$",
+          "name": "variable.string.ataribasic",
+          "patterns": [{"include": "#cmd_dim_subscript"}]
+        },
+        {
+          "match": "[A-Z][A-Z0-9]*",
+          "name": "variable.float.ataribasic",
+          "patterns": [{"include": "#cmd_dim_subscript"}]
+        }
+      ]
+    },
+    "cmd_dim_subscript": {
+      "patterns": [
+        {
+          "begin": "\\(",
+          "beginCaptures": {"0": {"name": "support.paren.open.expr.ataribasic"}},
+          "end": "\\)",
+          "endCaptures": {"0": {"name": "support.paren.close.expr.ataribasic"}},
+          "patterns": [{"include": "#expr_paren_open"}]
+        }
+      ]
+    },
+    "cmd_done" : {
+      "comment": "A statement known to be completed is marked broken if any tokens follow before a new statement.",
+      "patterns": [
+        {
+          "include": "#mixin_statement_end"
+        },
+        {
+          "match": "",
+          "name": "invalid.illegal"
+        }
+      ]
+    },
+    "cmd_for": {
+      "comment": "Within FOR, look for TO AND STEP as a keywords",
+      "patterns": [
+        {
+          "include": "#mixin_statement_end"
+        },
+        {
+          "match": "TO",
+          "name": "keyword.to.ataribasic"
+        },
+        {
+          "match": "STEP",
+          "name": "keyword.step.ataribasic"
+        },
+        {
+          "include": "#expr_start"
+        }
+      ]
+    },
+    "cmd_if": { 
+      "patterns": [
+        {
+          "match": "\\s*(THEN)\\s*([-+]?(\\d+\\.\\d*(E\\d+)?|\\.?\\d+(E\\d+)?))",
+          "captures": {
+            "1": {"name": "keyword.then.ataribasic"},
+            "2": {"name": "keyword.control.line-number.ataribasic"}
+          },
+          "patterns": [{"include": "#line_and_statement_should_end"}]
+        },
+        {
+          "begin": "\\s*(THEN)\\s*",
+          "beginCaptures": {
+            "1": {"name": "keyword.then.ataribasic"}
+          },
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#code_line"}]
+        }
+      ]
+    },
+    "cmd_let": {
+      "patterns": [
+        
+        {
+          "match": "[A-Z][A-Z0-9]*\\$*",
+          "name": "variable.string.ataribasic",
+          "patterns": [{"include": "#expr_eat_subscript"}]
+        },
+        {
+          "match": "(\\s*)(=)(\\s*)",
+          "captures": {"2" :{"name":"keyword.operator.assignment.ataribasic"}}
+        },
+        {
+          "include":"#expr_wants_value"
+        },
+        {
+          "match": "",
+          "name": "invalid.illegal"
+        }
+      ]
+    },
+    "cmd_next": {
+      "comment": "Within NEXT only a float var is valid",
+      "patterns": [
+        {
+          "match": "[A-Z][A-Z0-9]*",
+          "name": "variable.float.ataribasic"
+        }
+      ]
+    },
+    "cmd_on": {
+      "patterns": [
+        {
+          "begin": "GOTO",
+          "beginCaptures": {"0": {"name": "keyword.on-goto.ataribasic"}},
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#on_line_list"}]
+        },
+        {
+          "begin": "GOSUB",
+          "beginCaptures": {"0": {"name": "keyword.on-gosub.ataribasic"}},
+          "end": "(:|$)",
+          "endCaptures": {"0": {"name":"support.other.delimiter.data.ataribasic"}},
+          "patterns": [{"include": "#on_line_list"}]
+        },
+        {
+          "include": "#mixin_some_exprs"
+        }
+      ]
+    },
+    "cmd_print": {
+      "comment": "PRINT - Expressions separated by commas and semicolons Currently not very smart. Expression evaluation will make it smarter",
+      "patterns": [
+        {
+          "match": ";",
+          "name": "support.other.delimiter.concat.ataribasic"
+        },
+        {
+          "match": "\\,",
+          "name": "support.other.delimiter.tab.ataribasic"
+        },
+        {
+          "include": "#real_expr"
+        }
+      ]
+    },
+    "cmd_print_dev":{
+      "comment": "PRINT #n - Mark the device id, if present. Always just go to cmd_print, even if missing so the expression can be tested",
+      "patterns": [
+        {
+          "match": "(\\d+)",
+          "captures": {
+            "1": {"name": "constant.numeric.device-id.ataribasic"}
+          }
+        },
+        {
+          "include": "#cmd_print"
+        }
+      ]
+    },
+    "cmd_xio": {
+      "patterns": [
+        {
+          "match": "\\,",
+          "scope": "support.other.delimiter.list.1.ataribasic"
+        },
+        {
+          "include": "#cmd_xio_part2"
+        },
+        {
+          "include": "real_expr"
+        },
+        {
+          "match": "",
+          "set": "invalid.illegal"
+        }
+      ]
+    },
+    "cmd_xio_part2": {
+      "patterns": [
+        {
+          "match": "\\s*(\\#)",
+          "captures": {
+            "1": {"name": "support.other.iocb.ataribasic"}
+          }
+        },
+        {
+          "include": "#expr_device"
+        }
+      ]
+    },
+    "expr_2nd_modifier":{
+      "patterns": [
+        {
+          "match": "[-+]?(\\d+\\.\\d*(E\\d+)?|\\.?\\d+(E\\d+)?)",
+          "name": "constant.numeric.float.ataribasic"
+        },
+        {
+          "include": "#expr_wants_operator"
+        },
+        {
+          "match": "NOT|[-+]",
+          "name": "invalid.illegal"
+        },
+        {
+          "match": "",
+          "patterns": [{"include": "#expr_wants_value"}]
+        }
+      ]
+    },
+    "expr_device": {
+      "patterns": [
+        {
+          "match": "(\\d+)",
+          "captures": {
+            "1": {"name": "constant.numeric.device-id.ataribasic"}
+          }
+        },
+        {
+          "include": "#expr_start"
+        }
+      ]
+    },
+    "expr_eat_modifier":{
+      "comment": "Tag a modifier",
+      "patterns": [
+        {
+          "match": "[-+]?(\\d+\\.\\d*(E\\d+)?|\\.?\\d+(E\\d+)?)",
+          "name": "constant.numeric.float.ataribasic",
+          "patterns": [{"include": "#expr_wants_operator"}]
+        },
+        {
+          "match": "(NOT)|(-)|(\\+)",
+          "captures": {
+            "1": {"name": "keyword.operator.logic.ataribasic"},
+            "2": {"name": "keyword.operator.negative.ataribasic"},
+            "3": {"name": "keyword.operator.positive.ataribasic"}
+          },
+          "patterns": [{"include": "#expr_2nd_modifier"}]
+        },
+        {
+          "include": "#expr_wants_value"
+        }
+      ]
+    },
+    "expr_paren_open":{
+      "comment": "An expression already within at least one parenthesis.",
+      "patterns": [
+        {
+          "include": "#mixin_containers"
+        },
+        {
+          "include": "#mixin_values"
+        },
+        {
+          "include": "#mixin_operators"
+        },
+        {
+          "match": "[^)]*(;:|$)",
+          "name": "invalid.illegal"
+        }
+      ]
+    },
+    "expr_start":{
+      "comment": "Start a top-level expression",
+      "patterns": [
+        {
+          "include": "#mixin_statement_end"
+        },
+        {
+          "include": "#mixin_top_expr"
+        }
+      ]
+    },
+    "expr_start_last": {
+      "patterns": [
+        {
+          "include": "#mixin_top_expr"
+        },
+        {
+          "begin": ":",
+          "beginCaptures": {"0":{"name": "support.other.delimiter.statement.ataribasic"}},
+          "end": "$",
+          "name": "invalid.illegal"
+        }
+      ]
+    },
+    "expr_till_close": {
+      "comment": "An enclosed expression. Comma delimited. No items limit.",
+      "patterns": [
+        {
+          "include": "#mixin_statement_end"
+        },
+        {
+          "include": "#expr_wants_operator"
+        },
+        {
+          "match": "\\,",
+          "scope": "support.other.delimiter.subscripts.ataribasic"
+        },
+        {
+          "include": "#expr_eat_modifier"
+        }
+      ]
+    },
+    "expr_wants_operator":{
+      "comment": "Expression wants an operator If one is not found the expression is done, so pop",
+      "name": "expr_wants_operator",
+      "patterns": [
+        {
+          "match": "((<>|[<>]=|[-+*/^<=>]|AND|OR)\\s*(:|$))",
+          "name": "invalid.illegal"
+        },
+        {
+          "match": "[-+*/^]",
+          "name": "keyword.operator.math.ataribasic",
+          "include": "#expr_eat_modifier"
+        },
+        {
+          "match": "<>|[<>]=?|=|AND|OR",
+          "name": "keyword.operator.logic.ataribasic",
+          "include": "#expr_eat_modifier"
+        },
+        {
+          "match": "(THEN)\\s*[-+]?(\\d+\\.\\d*(E\\d+)?|\\.?\\d+(E\\d+)?)",
+          "captures": {
+            "1": {"name": "keyword.then.ataribasic"},
+            "2": {"name": "keyword.control.line-number.ataribasic"}
+          },
+          "include--": "#line_and_statement_should_end"
+        },
+        {
+          "match": "THEN",
+          "name": "keyword.then.ataribasic",
+          "include": "#code_line"
+        },
+        {
+          "match": "(GOTO)|(GOSUB)",
+          "captures": {
+            "1": {"name":"keyword.goto.ataribasic"},
+            "2": {"name":"keyword.gosub.ataribasic"}
+          }
+        },
+        {
+          "match": "[A-Z][A-Z0-9]*|[-+]?(\\d+\\.\\d*(E\\d+)?|\\.?\\d+(E\\d+)?)|\\(",
+          "name": "invalid.illegal"
+        }
+      ]
+    },
+    "expr_wants_value":{
+      "comment": "Expression wants a value",
+      "patterns": [
+        {
+          "begin": "(CHR\\$)\\(",
+          "beginCaptures": {"0": {"name": "support.function.chrS.ataribasic"}},
+          "end": "\\)|:|$",
+          "patterns": [
+            {"include": "#expr_wants_operator"},
+            {"include": "#required_args"}
+          ]
+        },
+        {
+          "begin": "(STR\\$)\\(",
+          "beginCaptures": {"0": {"name": "support.function.str.ataribasic"}},
+          "end": "\\)|:|$",
+          "patterns": [
+            {"include": "#expr_wants_operator"},
+            {"include": "#required_args"}
+          ]
+        },
+        {
+          "begin": "(FRE)|(USR)|(ABS)|(ADR)|(ASC)|(ATN)|(CLOG)|(COS)|(EXP)|(INT)|(LEN)|(LOG)|(PEEK)|(RND)|(SGN)|(SIN)|(SQR)|(VAL)|(PADDLE)|(PTRIG)|(STICK)|(STRIG)",
+          "beginCaptures": {
+            "1": {"name": "support.function.fre.ataribasic"},
+            "2": {"name": "support.function.usr.ataribasic"},
+            "3": {"name": "support.function.abs.ataribasic"},
+            "4": {"name": "support.function.adr.ataribasic"},
+            "5": {"name": "support.function.asc.ataribasic"},
+            "6": {"name": "support.function.atn.ataribasic"},
+            "7": {"name": "support.function.clog.ataribasic"},
+            "8": {"name": "support.function.cos.ataribasic"},
+            "9": {"name": "support.function.exp.ataribasic"},
+            "10": {"name": "support.function.int.ataribasic"},
+            "11": {"name": "support.function.len.ataribasic"},
+            "12": {"name": "support.function.log.ataribasic"},
+            "13": {"name": "support.function.peek.ataribasic"},
+            "14": {"name": "support.function.rnd.ataribasic"},
+            "15": {"name": "support.function.sgn.ataribasic"},
+            "16": {"name": "support.function.sin.ataribasic"},
+            "17": {"name": "support.function.sqr.ataribasic"},
+            "18": {"name": "support.function.val.ataribasic"},
+            "19": {"name": "support.function.paddle.ataribasic"},
+            "20": {"name": "support.function.ptrig.ataribasic"},
+            "21": {"name": "support.function.stick.ataribasic"},
+            "22": {"name": "support.function.strig.ataribasic"}
+          },
+          "end": ":|$",
+          "patterns": [
+            {"include": "#expr_wants_operator"},
+            {"include": "#required_args"}
+          ]
+        },
+        {
+          "begin": "\\\"",
+          "beginCaptures": {"0":{"name": "punctuation.definition.string.open.ataribasic"}},
+          "end": "\\\"",
+          "endCaptures": {"0":{"name": "punctuation.definition.string.open.ataribasic"}},
+          "patterns": [{"include": "#quoted_string"}],
+          "name": "string.quoted.double"
+        },
+        {
+          "begin": "\\(",
+          "beginCaptures": {"0": {"name": "support.paren.open.ataribasic"}},
+          "end": "\\)|:|$",
+          "endCaptures": {"0": {"name": "support.paren.close.ataribasic"}},
+          "patterns": [{"include": "#expr_till_close"}]
+        },
+        {
+          "match": "[-+]?(\\d+\\.\\d*(E\\d+)?|\\.?\\d+(E\\d+)?)",
+          "name": "constant.numeric.float.ataribasic-3",
+          "patterns": [{"include": "#expr_wants_operator"}]
+        },
+        {
+          "match": "THEN|GOTO|GOSUB",
+          "name": "invalid.illegal.reserved-word.ataribasic",
+          "patterns": [{"include": "#invalid.illegal"}]
+        },
+        {
+          "match": "[A-Z][A-Z0-9]*\\$",
+          "name": "variable.string.ataribasic",
+          "patterns": [{"include": "#expr_eat_subscript"}]
+        },
+        {
+          "match": "[A-Z][A-Z0-9]*",
+          "name": "variable.float.ataribasic",
+          "patterns": [{"include": "#expr_eat_subscript"}]
+        },
+        {
+          "match-wrong": "",
+          "patterns": [{"include": "#invalid.illegal"}]
+        }
+      ]
+    },
+    "four_exprs": {
+      "patterns": [
+        {
+          "match": "\\s*(,)",
+          "captures": {
+            "1": {"name":"support.other.delimiter.list.3.ataribasic"}
+          },
+          "patterns": [{"include": "#three_exprs"}]
+        },
+        {
+          "include": "#real_expr"
+        }
+      ]
+    },
+    "line_number": {
+      "match": "[-+]?(\\d+\\.\\d*(E\\d+)?|\\.?\\d+(E\\d+)?)",
+      "name": "keyword.control.line-number.ataribasic"
+    },
+    "line_and_statement_should_end" :{
+      "comment": "A statement might also want to end the line",
+      "patterns": [
+        {
+          "begin": ":",
+          "end": "$",
+          "name": "support.other.delimiter.statement.ataribasic-2"
+        },
+        {
+          "match": "",
+          "name": "invalid.illegal"
+        }
+      ]
+    },
+    "mixin_containers":{
+      "comment": "String group and expression group to be used inside parentheses only",
+      "patterns": [
+        {
+          "include": "#mixin_string"
+        },
+        {
+          "begin": "\\(",
+          "beginCaptures": {"0": {"name": "support.paren.open.expr.ataribasic"}},
+          "end": "\\)|:|$",
+          "endCaptures": {"0": {"name": "support.paren.close.expr.ataribasic"}},
+          "patterns": [{"include": "#expr_wants_value"}]
+        }
+      ]
+    },
+    "mixin_operators": {
+      "comment": "Grab bag of operators for the dumb expression parser",
+      "patterns": [
+        {
+          "match": "\\,",
+          "name": "support.other.delimiter.list.ataribasic"
+        },
+        {
+          "match": "([-+*/^])",
+          "name": "keyword.operator.math.ataribasic"
+        },
+        {
+          "match": "(<>|[<>]=?|=|AND|NOT|OR)",
+          "name": "keyword.operator.logic.ataribasic"
+        }
+      ]
+    },
+    "mixin_some_exprs": {
+      "patterns": [
+        {
+          "include": "#mixin_statement_end"
+        },
+        {
+          "include": "#mixin_string"
+        },
+        {
+          "match": "(<>|[<>]=?|=|AND|NOT|OR)",
+          "name": "keyword.operator.logic.ataribasic"
+        },
+        {
+          "include": "#mixin_values"
+        },
+        {
+          "begin": "\\(",
+          "beginCaptures": {"0": {"name": "support.paren.open.expr.ataribasic"}},
+          "end": "\\)|:|$",
+          "endCaptures": {"0": {"name": "support.paren.close.expr.ataribasic"}},
+          "patterns": [{"include": "#expr_paren_open"}]
+        },
+        {
+          "match": "[:$]",
+          "name": "invalid.illegal"
+        },
+        {
+          "match": "([-+*/^])",
+          "name": "keyword.operator.math.ataribasic"
+        }
+      ]
+    },
+    "mixin_statement_end":{
+      "comment": "Mix-in to pop the context if the statement ends",
+      "patterns": [
+        {
+          "match": ":\\s*$",
+          "name": "invalid.illegal"
+        }
+      ]
+    },
+    "mixin_string" : {
+      "comment": "A string opener that pushes quoted_string",
+      "patterns": [
+        {
+          "begin": "\\\"",
+          "beginCaptures": {"0":{"name": "punctuation.definition.string.open.ataribasic"}},
+          "end": "\\\"",
+          "endCaptures": {"0":{"name": "punctuation.definition.string.open.ataribasic"}},
+          "patterns": [{"include": "#quoted_string"}],
+          "name": "string.quoted.double"
+        }
+      ]
+    },
+    "mixin_top_expr":{
+      "comment": "For top-level expressions a closing parenthesis breaks the rest of the line",
+      "patterns": [
+        {
+          "include": "#mixin_string"
+        },
+        {
+          "begin": "\\(",
+          "beginCaptures": {"0": {"name": "support.paren.open.expr.ataribasic"}},
+          "end": "\\)|:|$",
+          "endCaptures": {"0": {"name": "support.paren.close.expr.ataribasic"}},
+          "patterns": [{"include": "#expr_paren_open"}]
+        },
+        {
+          "match": "\\)",
+          "name": "invalid.illegal"
+        },
+        {
+          "include": "#mixin_operators"
+        },
+        {
+          "include": "#mixin_values"
+        }
+      ]
+    },
+    "mixin_values":{
+      "comment": "Rules to match all known value types Always use last so the last reject rule here works",
+      "patterns": [
+        {
+          "match": "[a-z\\$\\%]",
+          "name": "invalid.illegal"
+        },
+        {
+          "begin": "CHR\\$",
+          "beginCaptures": {"0": {"name": "support.function.chrS.ataribasic"}},
+          "end": ":|$",
+          "patterns": [{"include": "#required_args"}]
+        },
+        {
+          "begin": "STR\\$",
+          "beginCaptures": {"0": {"name": "support.function.str.ataribasic"}},
+          "end": ":|$",
+          "patterns": [{"include": "#required_args"}]
+        },
+        {
+          "begin": "(FRE)|(USR)|(ABS)|(ADR)|(ASC)|(ATN)|(CLOG)|(COS)|(EXP)|(INT)|(LEN)|(LOG)|(PEEK)|(RND)|(SGN)|(SIN)|(SQR)|(VAL)|(PADDLE)|(PTRIG)|(STICK)|(STRIG)",
+          "beginCaptures": {
+            "2": {"name":"support.function.usr.ataribasic"},
+            "3": {"name":"support.function.abs.ataribasic"},
+            "1": {"name":"support.function.fre.ataribasic"},
+            "4": {"name":"support.function.adr.ataribasic"},
+            "5": {"name":"support.function.asc.ataribasic"},
+            "6": {"name":"support.function.atn.ataribasic"},
+            "7": {"name":"support.function.clog.ataribasic"},
+            "8": {"name":"support.function.cos.ataribasic"},
+            "9": {"name":"support.function.exp.ataribasic"},
+            "10":{"name": "support.function.int.ataribasic"},
+            "11":{"name": "support.function.len.ataribasic"},
+            "12":{"name": "support.function.log.ataribasic"},
+            "13":{"name": "support.function.peek.ataribasic"},
+            "14":{"name": "support.function.rnd.ataribasic"},
+            "15":{"name": "support.function.sgn.ataribasic"},
+            "16":{"name": "support.function.sin.ataribasic"},
+            "17":{"name": "support.function.sqr.ataribasic"},
+            "18":{"name": "support.function.val.ataribasic"},
+            "19":{"name": "support.function.paddle.ataribasic"},
+            "20":{"name": "support.function.ptrig.ataribasic"},
+            "21":{"name": "support.function.stick.ataribasic"},
+            "22":{"name": "support.function.strig.ataribasic"}
+          },
+          "end": "$",
+          "patterns": [{"include": "#required_args"}]
+        },
+        {
+          "match": "[-+]?(\\d+\\.\\d*(E\\d+)?|\\.?\\d+(E\\d+)?)",
+          "name": "constant.numeric.float.ataribasic"
+        },
+        {
+          "include": "#mixin_variable_name"
+        }
+      ]
+    },
+    "mixin_variable_name":{
+      "comment": "Rules to match a variable name",
+      "patterns": [
+        {
+          "match": "[A-Z][A-Z0-9]*\\$",
+          "captures": {"0" : {"name": "variable.string.ataribasic"}},
+          "patterns": [{"include": "#var_eat_subscript"}]
+        },
+        {
+          "match": "[A-Z][A-Z0-9]*",
+          "captures": {"0" : {"name": "variable.float.ataribasic"}},
+          "patterns": [{"include": "#var_eat_subscript"}]
+        }
+      ]
+    },
+    "on_line_list": {
+      "patterns": [
+        {
+          "include": "#mixin_statement_end"
+        },
+        {
+          "match": "([-+]?(\\d+\\.\\d*(E\\d+)?|\\.?\\d+(E\\d+)?)|[A-Z][A-Z0-9]*)\\s*(\\,)?",
+          "captures": {
+            "1": {"name": "keyword.control.line-number.ataribasic"},
+            "2": {"name": "support.other.delimiter.list.ataribasic"}
+          }
+        },
+        {
+          "match": "[^\\d]",
+          "name": "invalid.illegal"
+        }
+      ]
+    },
+    "one_expr": {
+      "patterns": [
+        {"include": "#real_expr"}
+      ]
+    },
+    "two_exprs": {
+      "patterns": [
+        {
+          "match": "\\s*(,)",
+          "captures": {
+            "1": {"name": "support.other.delimiter.list.1.ataribasic"}
+          },
+          "patterns": [{"include": "#one_expr"}]
+        },
+        {
+          "include": "#real_expr"
+        }
+      ]
+    },
+    "three_exprs": {
+      "patterns": [
+        {
+          "match": "\\s*(,)",
+          "captures": {
+            "1": {"name":"support.other.delimiter.list.2.ataribasic"}
+          },
+          "patterns": [{"include": "#two_exprs"}]
+        },
+        {
+          "include": "#real_expr"
+        }
+      ]
+    },
+    "real_expr":{
+      "comment": "real_expr Wants a proper expression or it throws syntax error So we start an expression, first we want a modifier or a value. If we don't find either of those then the expression is moot. However, if we do find them, then we must mark them here also, and change the context so that an operator is next required. (Later it will be possible to tell whether strings in a float context are converting to float).",
+      "patterns": [
+        {
+          "include": "#mixin_statement_end"
+        },
+        {
+          "include": "#expr_eat_modifier"
+        }
+      ]
+    },
+    "required_args": {
+      "comment": "Function requires parentheses or the line breaks",
+      "patterns": [
+        {
+          "begin": "\\(",
+          "beginCaptures": {"0": {"name": "support.paren.open.func.ataribasic"}},
+          "end": "\\)|:|$",
+          "endCaptures": {"0": {"name": "support.paren.close.func.ataribasic"}},
+          "patterns": [{"include": "#expr_paren_open"}]
+        },
+        {
+          "match": "",
+          "name": "invalid.illegal"
+        }
+      ]
+    },
+    "quoted_string":  {
+      "comment": "On Atari there's no escaping a string. Strings may legally be quite long, with escape characters in them, etc., by hacking the BASIC language.",
+      "patterns": [
+        {
+          "match": "[^\"]*$",
+          "name": "invalid.illegal"
+        }
+      ]
+    },
+    "var_eat_subscript":{
+      "patterns": [
+        {
+          "begin": "\\(",
+          "beginCaptures": {"0": {"name": "support.paren.open.subscript.ataribasic"}},
+          "end": "\\)",
+          "endCaptures": {"0": {"name": "support.paren.close.subscript.ataribasic"}},
+          "patterns": [{"include": "#expr_paren_open"}]
+        }
+      ]
+    }
+  }
+}
