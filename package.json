@@ -1,7 +1,7 @@
 {
     "name": "atari-basic",
     "displayName": "Atari BASIC Syntax",
-    "description": "Landuage support for Atari BASIC",
+    "description": "Language support for Atari BASIC",
     "publisher": "MarcinJozwikowski",
     "repository": {
         "url": "https://github.com/marcin-jozwikowski/atari-basic-vsc-extension.git",
